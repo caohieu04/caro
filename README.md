@@ -1,6 +1,5 @@
-DONG 63 BOARDSTATE: NEU THAY DOI KICH CO, NEN DE Y VI SE BUG NEU ROW VA COL != NHAU
-height va width 
-
+##Plan
+**Height và Width luôn bằng nhau (default = 20)**
 Outlay ban co: 
 * ban co hinh vuong o giua
 * 2 player 2 ben
