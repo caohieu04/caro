@@ -12,6 +12,7 @@ Menu:
 * them mot boolean chanHaiDau
 * if else cac kieu o phan boardstare.checkEnd
 * của (Dung)
+
 `Ke hoach het thu 5 xong` 
 `Debug het ngay thu 6 hai feature tren`
 
