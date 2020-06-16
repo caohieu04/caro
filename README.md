@@ -1,5 +1,7 @@
 ##Plan
+
 **Height và Width luôn bằng nhau (default = 20)**
+
 Outlay ban co: 
 * ban co hinh vuong o giua
 * 2 player 2 ben
