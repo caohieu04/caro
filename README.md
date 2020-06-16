@@ -21,8 +21,8 @@ LAN:
 * shared folder o network, 2 may se cap nhat = file.dat nho feature save va load data
 * sender xuat .dat vao file folder
 * receiver nhan .dat lien tuc, neu .dat moi != .dat cu => ban co thay doi => cap nhat trang thai
-[=================]
-Future feature:
+
+## Future feature:
 * feature thay doi kich co se lam sau
 * highlight o vua danh
 * highlight 5 o thang
