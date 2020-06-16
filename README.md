@@ -5,13 +5,15 @@ Outlay ban co:
 * ban co hinh vuong o giua
 * 2 player 2 ben
 * menu o tren cung
-* cái này của (Loc Huy voi Khanh)
+* cái này của (Loc Huy voi Khanh) 
 
 Menu:
 * them feature: chan 2 dau
 * them mot boolean chanHaiDau
 * if else cac kieu o phan boardstare.checkEnd
 * của (Dung)
+`Ke hoach het thu 5 xong` 
+`Debug het ngay thu 6 hai feature tren`
 
 (xong 2 phần kia rồi tính để không bug chéo) 
 Timer: 
