@@ -41,7 +41,7 @@ class Human(Player):
     This player type allow a human player to play the game
     """
     def select_cell(self, board, **kwargs):
-        cell = input("Select cell to fill:\n678\n345\n012\ncell number: ")
+        cell = input("Select cell to fill: ")
         return cell
 
     def learn(self, **kwargs):
@@ -181,8 +181,6 @@ class Novice(Player):
                                 self.value[(row - i) * width + col + i] *= 2
 
     def checkEnd(self):
-        p1 = 0
-        p2 = 0
         winning_seq = []
         for row in range(width):
             for col in range(height - 4):
@@ -225,10 +223,11 @@ class Novice(Player):
                 p1 = 0
                 p2 = 0
                 winning_seq = []
-                if self.board[(row + i) * width + col + i] == -1:
-                    p2 += 1
-                elif self.board[(row + i) * width + col + i] == 1:
-                    p1 += 1
+                for i in range(5):
+                    if self.board[(row + i) * width + col + i] == -1:
+                        p2 += 1
+                    elif self.board[(row + i) * width + col + i] == 1:
+                        p1 += 1
                 if p1 == 5:
                     for i in range(5):
                         winning_seq.append((row + i) * width + col + i)
@@ -243,10 +242,11 @@ class Novice(Player):
                 p1 = 0
                 p2 = 0
                 winning_seq = []
-                if self.board[(row - i) * width + col + i] == -1:
-                    p2 += 1
-                elif self.board[(row - i) * width + col + i] == 1:
-                    p1 += 1
+                for i in range(5):
+                    if self.board[(row - i) * width + col + i] == -1:
+                        p2 += 1
+                    elif self.board[(row - i) * width + col + i] == 1:
+                        p1 += 1
                 if p1 == 5:
                     for i in range(5):
                         winning_seq.append((row - i) * width + col + i)
@@ -278,39 +278,38 @@ class Novice(Player):
             self.boardEval(2)
         else:
             self.boardEval(1)
-
+        #print(alpha, beta)
         if depth == 0:
             return self.maxPos(0)
-        if self.checkEnd():
+        if self.checkEnd()[0]:
             self.goPoint = self.lastPoint
             return self.maxPos(0)
         goodpoints = []
         for i in range(self.maxBreadth):
             point = self.maxPos(1)
-            self.board[int(point[0])][int(point[1])] = 0
+            self.value[int(point[0])* width + int(point[1])] = 0
             goodpoints.append(point)
 
         if (maximizingPlayer):
             maxEval = -self.inf
             for point in goodpoints:
-                self.mark[int(point[0])][int(point[1])] = 2
+                self.board[int(point[0]) * width + int(point[1])] = 2
                 self.lastPoint = point
                 eval = self.minimax(depth - 1, alpha, beta, False)
-                self.mark[int(point[0])][int(point[1])] = 0
+                self.board[int(point[0]) * width + int(point[1])] = 0
                 maxEval = max(maxEval, eval)
                 alpha = max(alpha, eval)
                 if maxEval >= beta:
                     self.goPoint = point
-                    print(self.goPoint)
                 if beta <= alpha:
                     break
             return maxEval
         else:
             minEval = self.inf
             for point in goodpoints:
-                self.mark[int(point[0])][int(point[1])] = 1
+                self.board[int(point[0]) * width + int(point[1])] = 1
                 eval = self.minimax(depth - 1, alpha, beta, True)
-                self.mark[int(point[0])][int(point[1])] = 0
+                self.board[int(point[0]) * width + int(point[1])] = 0
                 minEval = min(minEval, eval)
                 beta = min(beta, eval)
                 if beta <= alpha:

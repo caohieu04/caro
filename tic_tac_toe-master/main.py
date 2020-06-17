@@ -8,16 +8,16 @@ import players
 from game import Game
 
 # Default Q-Player settings
-layers_size = [100, 160, 160, 100]
+layers_size = [800, 200, 100, 200, 800]
 batch_size = 150
 batches_to_q_target_switch = 1000
 gamma = 0.95
 tau = 1
-memory_size = 1000000
+memory_size = 9000000
 learning_rate = 0.0001
 
 
-def train(p1_name, p2_name, p1_max_ent, p2_max_ent, p2_novice, num_of_games=1, savedir='./models'):
+def train(p1_name, p2_name, p1_max_ent, p2_max_ent, p2_novice, num_of_games=1e4, savedir='./New'):
     """
     Initiate a single training process
     :param p1_name: String. Name of player 1 (will be used as file-name)
@@ -28,7 +28,7 @@ def train(p1_name, p2_name, p1_max_ent, p2_max_ent, p2_novice, num_of_games=1, s
     :param num_of_games: Number. Number of games to train on
     :param savedir: String. Path to save trained weights
     """
-    print("*")
+
     random.seed(int(time()*1000))
     tf.reset_default_graph()
     logging.basicConfig(level=logging.INFO, format='%(message)s')
@@ -133,7 +133,7 @@ def train(p1_name, p2_name, p1_max_ent, p2_max_ent, p2_novice, num_of_games=1, s
         game.inactive_player.add_to_memory(memory_element)
 
         # Print statistics
-        period = 2
+        period = 10
         if g % int(period) == 0:
             game.print_field()
             print('Game: {g} | Number of Trainings: {t1},{t2} | Epsilon: {e} | Average Rewards - {p1}: {r1}, {p2}: {r2}'
@@ -215,7 +215,7 @@ def play(model_path, is_max_entropy):
 
     p2 = players.Human()
 
-    for g in range(4):
+    for g in range(1):
         print('STARTING NEW GAME (#{})\n-------------'.format(g))
         if g%2==0:
             game = Game(p1,p2)
@@ -225,14 +225,19 @@ def play(model_path, is_max_entropy):
             print("Computer is O (-1)")
         while not game.game_status()['game_over']:
             if isinstance(game.active_player, players.Human):
-                game.print_board()
+                game.print_field()
                 print("{}'s turn:".format(game.current_player))
+            game.print_field()
             state = np.copy(game.board)
             # Force Q-Network to select different starting positions if it plays first
-            action = int(game.active_player.select_cell(state,epsilon=0.0)) if np.count_nonzero(game.board) > 0 or not isinstance(game.active_player,players.QPlayer) else random.randint(0,8)
+            action = int(game.active_player.select_cell(state,epsilon=0.0)) if np.count_nonzero(game.board) > 0 or not isinstance(game.active_player,players.QPlayer) else random.randint(0,399)
+            print(game.current_player, action)
             game.play(action)
             if not game.game_status()['game_over']:
                 game.next_player()
+            if game._invalid_move_played:
+                print("*")
+                break
         print('-------------\nGAME OVER!')
         game.print_board()
         print(game.game_status())
@@ -305,5 +310,5 @@ def face_off(paths, rng=3, p1_name='Q', p2_name='E'):
 
 
 #face_off(['./models/trained_against_novice', './models/trained_together'])
-#train('Q', 'E', 1, 1, 1)
-play("./models/trained_against_novice", 1)
+train('A', 'B', 1, 1, 1)
+#play("./New/A.ckpt", 1)

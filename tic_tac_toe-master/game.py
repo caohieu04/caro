@@ -185,8 +185,8 @@ class Game:
                 row += '| '
             else:
                 row = row[::-1]
-                if i != 0:
-                    row += ' \n-----------'
+                #if i != 0:
+                    #row += ' \n-----------'
                 print(row)
                 row = ' '
     def print_field(self):
