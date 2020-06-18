@@ -1,31 +1,30 @@
-/**
- *  Lop luu lai trang thai cua ban co
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package model;
-
 public class BoardState {
-	// Mang luu lai cac trang thai cac quan co
+	// board
 	public static int[][] boardArr;
-	// chieu rong cua ban co
 	public int width;
-	// chieu cao cua ban co
 	public int height;
-	// khoi tao
+
 	public BoardState(int width, int height) {
 		boardArr = new int[width][height];
 		this.height = height;
 		this.width = width;
 	}
-	// reset ban co
+
 	public void resetBoard(){
 		boardArr = new int[width][height];
 	}
-	// Check chien thang
+	//win cond
 	public int checkEnd(int row, int col) {
 		int r = 0, c = 0;
 		int i;
 		boolean human, pc;
-		// Check hang ngang
+		// ngang
 		while (c < width - 4) {
 			human = true;
 			pc = true;
@@ -35,14 +34,17 @@ public class BoardState {
 				if (boardArr[row][c + i] != 2)
 					pc = false;
 			}
-			if (human)
-				return 1;
+			if (human) {
+				if(widthBlock(c, row, 2))
+				return 1;}
 			if (pc)
-				return 2;
+			{
+				if(widthBlock(c, row, 1))
+				return 2;}
 			c++;
 		}
 
-		// Check  hang doc
+		//doc
 		while (r < height - 4) {
 			human = true;
 			pc = true;
@@ -52,14 +54,16 @@ public class BoardState {
 				if (boardArr[r + i][col] != 2)
 					pc = false;
 			}
-			if (human)
-				return 1;
-			if (pc)
-				return 2;
+			if (human) {
+				if( heightBlock(r, col, 2))
+					return 1;}
+			if (pc) {
+				if(heightBlock(r, col, 1))
+					return 2;}
 			r++;
 		}
 
-		// Check duong cheo xuong
+		// \
 		r = row;
 		c = col;
 		while (r > 0 && c > 0) {
@@ -75,15 +79,20 @@ public class BoardState {
 				if (boardArr[r + i][c + i] != 2)
 					pc = false;
 			}
-			if (human)
-				return 1;
-			if (pc)
-				return 2;
+			if (human) {
+				if (downTiltBlock(r, c, 2))
+
+					return 1;
+			}
+			if (pc) {
+				if (downTiltBlock(r, c, 1))
+					return 2;
+			}
 			r++;
 			c++;
 		}
 
-		// Check duong cheo len
+		// /
 		r = row;
 		c = col;
 		while (r < height - 1 && c > 0) {
@@ -100,21 +109,65 @@ public class BoardState {
 				if (boardArr[r - i][c + i] != 2)
 					pc = false;
 			}
-			if (human)
-				return 1;
-			if (pc)
-				return 2;
+			if (human) {
+				if (upTiltBlock(r, c, 2))
+					return 1;
+			}
+			if (pc) {
+				if (upTiltBlock(r, c, 1))
+					return 2;
+			}
 			r--;
 			c++;
 		}
 		return 0;
 	}
-	// Lay trang thai cua quan co tai 1 toa do xac dinh
 	public int getPosition(int x, int y) {
 		return boardArr[x][y];
 	}
-	// set trang thai cho 1 quan co xac dinh
+
 	public void setPosition(int x, int y, int player) {
 		boardArr[x][y] = player;
+	}
+	private boolean widthBlock(int c, int row, int b){
+		/*return ((a != 0 && boardArr[row][a - 1] != b) || boardArr[row][a + 5] != b);
+		switch a:{
+		case 4: {
+			if (getPosition(row, a + 1) == b) return false;
+			break;
+		}
+			case height:{
+				if (getPosition(row, a - 5) == b) return false;
+				break;
+			}
+			default {
+
+			}
+		}*/
+		if(c == 0) return true;
+		else if(c + 5 == width) return true;
+		else return boardArr[row][c + 5] != b && boardArr[row][c + (-1)] != b;
+	}
+	private boolean heightBlock(int r, int col, int b){
+		if(r == 0) return true;
+		else if(r + 5 == height) return true;
+		else return boardArr[r +(- 1)][col] != b && boardArr[r + 5][col] != b;
+	}
+
+	private boolean downTiltBlock(int r, int c, int b){
+		if((r + 5 == height && c + 5 == width) || ( r == 0 && c == 0)) return true;
+		if(r == 0 || c == 0) return true;
+		else if(r + 5 == height || c + 5 == width ) return true;
+		else return boardArr[r + (-1)][c + (- 1)]  != b && boardArr[r + 5][c + 5] != b;
+	}
+
+
+	private boolean upTiltBlock(int r, int c, int b){
+		if((r == 4 && c == 0) || (r == height && c + 5 == width)) return true;
+		if(r  == height || c  == 0) return true;
+		else if(r  == 4 || c + 5 == width ) return true;
+		else {
+			return boardArr[r + 1][c + (-1)]  != b && boardArr[r - 5][c + 5] != b;
+		}
 	}
 }
