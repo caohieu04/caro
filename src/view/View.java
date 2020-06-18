@@ -75,21 +75,24 @@ public class View implements EventHandler<ActionEvent> {
 			BorderPane borderPane = new BorderPane();// tạo cái borderpane
 			BorderPane borderPaneLeft = new BorderPane();
 			BorderPane borderPaneRight = new BorderPane();
+			BorderPane borderPaneTop = new BorderPane();
 			//tạo 2 rectangle để chứa data
 			menu(borderPaneRight);
+			menuGridPane(borderPaneTop);
 			//
 			menu(borderPaneLeft);
 			//
 			GridPane root = new GridPane();
 			Scene scene = new Scene(borderPane, WIDTH_PANE, HEIGHT_PANE);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			borderPane.setPadding(new Insets(20));
+			borderPane.setPadding(new Insets(0,10,0,10));
 			//
+			borderPane.setTop(borderPaneTop);
 			borderPane.setCenter(root);
 			borderPane.setLeft(borderPaneLeft);//phải xóa dc cái borderright thì cái kia mới vô giữa
 			borderPane.setRight(borderPaneRight);
 			//set bàn cờ ra giữa
-			BorderPane.setMargin(root,new Insets(0,100,0,220));
+			BorderPane.setMargin(root,new Insets(10,60,0,280));
 			//
 			// mac dinh player 1 di truoc
 			controller.setPlayerFlag(1);
@@ -123,9 +126,7 @@ public class View implements EventHandler<ActionEvent> {
 		}
 	}
 
-
-	private void menu(BorderPane pane) {
-
+	private void menuGridPane(BorderPane pane){
 		VBox box = new VBox();
 		box.setSpacing(10);
 		Class<?> clazz = this.getClass();
@@ -146,8 +147,78 @@ public class View implements EventHandler<ActionEvent> {
 
 
 		 */
-		/*
+
 		// Computer
+		btnComputer = new Button("Chơi với máy");
+		btnComputer.setId("btnMenu");
+		btnComputer.setOnAction(this);
+
+		gridPane.add(btnComputer,0,0);
+		// Human
+		btnHuman= new Button("Hai người chơi");
+		btnHuman.setId("btnMenu");
+		btnHuman.setOnAction(this);
+
+		gridPane.add(btnHuman,1,0);
+
+		// Undo
+		btnUndo = new Button("Quay lại");
+		btnUndo.setId("btnMenu");
+		btnUndo.setOnAction(this);
+
+		gridPane.add(btnUndo,2,0);
+		// Save
+		btnSave = new Button("Lưu lại");
+		btnSave.setId("btnMenu");
+		btnSave.setOnAction(this);
+
+		gridPane.add(btnSave,3,0);
+		// Load
+		btnLoad = new Button("Load lại");
+		btnLoad.setId("btnMenu");
+		btnLoad.setOnAction(this);
+
+		gridPane.add(btnLoad,4,0);
+		// About
+		btnAbout = new Button("Thông tin");
+		btnAbout.setId("btnMenu");
+		btnAbout.setOnAction(this);
+
+		gridPane.add(btnAbout,5,0);
+		// exit
+		btnExit = new Button("Thoát");
+		btnExit.setId("btnMenu");
+		btnExit.setOnAction(this);
+
+		gridPane.add(btnExit,6,0);
+		//
+		box.getChildren().add(gridPane);
+		pane.setLeft(box);
+	}
+	private void menu(BorderPane pane) {
+		VBox box = new VBox();
+		box.setSpacing(10);
+		Class<?> clazz = this.getClass();
+		//AnchorPane anchorPaneLogo = new AnchorPane();
+		//AnchorPane gridPane = new AnchorPane();
+		GridPane gridPane = new GridPane();
+
+		// set logo
+		/*InputStream input = clazz.getResourceAsStream("/image/Logo.jpg");
+		Image image = new Image(input);
+		ImageView imgView = new ImageView(image);
+		imgView.setFitHeight(230);
+		imgView.setFitWidth(260);
+		AnchorPane.setTopAnchor(imgView, 10.0);
+		AnchorPane.setLeftAnchor(imgView, 30.0);
+		AnchorPane.setRightAnchor(imgView, 30.0);
+		anchorPaneLogo.add(imgView);
+
+
+		 */
+
+		// Computer
+		/*
 		btnComputer = new Button("Chơi với máy");
 		btnComputer.setId("btnMenu");
 		btnComputer.setOnAction(this);
@@ -193,10 +264,12 @@ public class View implements EventHandler<ActionEvent> {
 		//
 		box.getChildren().add(gridPane);
 
-	
 
 
 		 */
+
+
+
 		// Bottom
 		Object name = inputname();
 
@@ -221,10 +294,8 @@ public class View implements EventHandler<ActionEvent> {
 		box.getChildren().add(gridPaneBottom1);
 		//
 		pane.setCenter(box);
-
 	}
 
-	
 	
 	@Override
 	public void handle(ActionEvent e) {
