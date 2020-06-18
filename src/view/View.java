@@ -28,12 +28,15 @@ import model.BoardState;
 import model.ComputerPlayer;
 import model.Player;
 import model.HumanPlayer;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 
 public class View implements EventHandler<ActionEvent> {
-	public static final int WIDTH_BOARD = 20;
-	public static final int HEIGHT_BOARD = 20;
-	public static final int WIDTH_PANE = 1200;
-	public static final int HEIGHT_PANE = 700;
+	public static final int WIDTH_BOARD = 24;
+	public static final int HEIGHT_BOARD = 24;
+	public static final int WIDTH_PANE = 2000;
+	public static final int HEIGHT_PANE = 1000;
 	private Button btnHuman;
 	private Button btnComputer;
 	private Button btnExit;
@@ -53,7 +56,12 @@ public class View implements EventHandler<ActionEvent> {
 
 	public View() {
 	}
-
+	//
+	public Object inputname(){
+		JFrame frame = new JFrame();
+		Object result = JOptionPane.showInputDialog(frame, "Enter name:");
+		return result;
+	}
 	public void start(Stage primaryStage) {
 		try {
 			View.primaryStage = primaryStage;
@@ -63,26 +71,39 @@ public class View implements EventHandler<ActionEvent> {
 			controller = new Controller();
 			controller.setView(this);
 			controller.setPlayer(computer);
-				
-			BorderPane borderPane = new BorderPane();
+			//
+			BorderPane borderPane = new BorderPane();// tạo cái borderpane
+			BorderPane borderPaneLeft = new BorderPane();
 			BorderPane borderPaneRight = new BorderPane();
+			//tạo 2 rectangle để chứa data
 			menu(borderPaneRight);
-			
+			//
+			menu(borderPaneLeft);
+			//
 			GridPane root = new GridPane();
 			Scene scene = new Scene(borderPane, WIDTH_PANE, HEIGHT_PANE);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			borderPane.setPadding(new Insets(20));
+			//
 			borderPane.setCenter(root);
+			borderPane.setLeft(borderPaneLeft);//phải xóa dc cái borderright thì cái kia mới vô giữa
 			borderPane.setRight(borderPaneRight);
+			//set bàn cờ ra giữa
+			BorderPane.setMargin(root,new Insets(0,100,0,220));
+			//
 			// mac dinh player 1 di truoc
 			controller.setPlayerFlag(1);
 			controller.setTimePlayer(timePlayer1, timePlayer2);
 			for (int i = 0; i < WIDTH_BOARD; i++) {
 				for (int j = 0; j < HEIGHT_BOARD; j++) {
 					Button button = new Button();
-					button.setPrefSize(40, 40);
+					//Tạo button
+					button.setPrefSize(43, 43);
+					//set size cho button
 					button.setAccessibleText(i + ";" + j);
+					//set text cho button
 					arrayButtonChess[i][j] = button;
+					//gán button vào bàn cờ, những ô để nhấn
 					root.add(button, j, i);
 					button.setOnAction(new EventHandler<ActionEvent>() {
 						@Override
@@ -95,7 +116,7 @@ public class View implements EventHandler<ActionEvent> {
 				}
 			}
 			primaryStage.setScene(scene);
-			primaryStage.setTitle("Game caro");
+			primaryStage.setTitle("Caro");
 			primaryStage.show();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -104,13 +125,16 @@ public class View implements EventHandler<ActionEvent> {
 
 
 	private void menu(BorderPane pane) {
+
 		VBox box = new VBox();
 		box.setSpacing(10);
 		Class<?> clazz = this.getClass();
-		AnchorPane anchorPaneLogo = new AnchorPane();
-		AnchorPane anchorPaneMenu = new AnchorPane();
+		//AnchorPane anchorPaneLogo = new AnchorPane();
+		//AnchorPane gridPane = new AnchorPane();
+		GridPane gridPane = new GridPane();
+
 		// set logo
-		InputStream input = clazz.getResourceAsStream("/image/Logo.jpg");
+		/*InputStream input = clazz.getResourceAsStream("/image/Logo.jpg");
 		Image image = new Image(input);
 		ImageView imgView = new ImageView(image);
 		imgView.setFitHeight(230);
@@ -118,85 +142,82 @@ public class View implements EventHandler<ActionEvent> {
 		AnchorPane.setTopAnchor(imgView, 10.0);
 		AnchorPane.setLeftAnchor(imgView, 30.0);
 		AnchorPane.setRightAnchor(imgView, 30.0);
-		anchorPaneLogo.getChildren().add(imgView);
+		anchorPaneLogo.add(imgView);
+
+
+		 */
+		/*
 		// Computer
 		btnComputer = new Button("Chơi với máy");
 		btnComputer.setId("btnMenu");
 		btnComputer.setOnAction(this);
-		AnchorPane.setTopAnchor(btnComputer, 10.0);
-		AnchorPane.setLeftAnchor(btnComputer, 30.0);
-		AnchorPane.setRightAnchor(btnComputer, 30.0);
-		anchorPaneMenu.getChildren().add(btnComputer);
+		
+		gridPane.add(btnComputer,0,0);
 		// Human
 		btnHuman= new Button("Hai người chơi");
 		btnHuman.setId("btnMenu");
 		btnHuman.setOnAction(this);
-		AnchorPane.setTopAnchor(btnHuman, 50.0);
-		AnchorPane.setLeftAnchor(btnHuman, 30.0);
-		AnchorPane.setRightAnchor(btnHuman, 30.0);
-		anchorPaneMenu.getChildren().add(btnHuman);
+		
+		gridPane.add(btnHuman,1,0);
 		
 		// Undo
 		btnUndo = new Button("Quay lại");
 		btnUndo.setId("btnMenu");
 		btnUndo.setOnAction(this);
-		AnchorPane.setTopAnchor(btnUndo, 90.0);
-		AnchorPane.setLeftAnchor(btnUndo, 30.0);
-		AnchorPane.setRightAnchor(btnUndo, 30.0);
-		anchorPaneMenu.getChildren().add(btnUndo);
+		
+		gridPane.add(btnUndo,2,0);
 		// Save
 		btnSave = new Button("Lưu lại");
 		btnSave.setId("btnMenu");
 		btnSave.setOnAction(this);
-		AnchorPane.setTopAnchor(btnSave, 130.0);
-		AnchorPane.setLeftAnchor(btnSave, 30.0);
-		AnchorPane.setRightAnchor(btnSave, 30.0);
-		anchorPaneMenu.getChildren().add(btnSave);
+	
+		gridPane.add(btnSave,3,0);
 		// Load
 		btnLoad = new Button("Load lại");
 		btnLoad.setId("btnMenu");
 		btnLoad.setOnAction(this);
-		AnchorPane.setTopAnchor(btnLoad, 170.0);
-		AnchorPane.setLeftAnchor(btnLoad, 30.0);
-		AnchorPane.setRightAnchor(btnLoad, 30.0);
-		anchorPaneMenu.getChildren().add(btnLoad);
+		
+		gridPane.add(btnLoad,4,0);
 		// About
 		btnAbout = new Button("Thông tin");
 		btnAbout.setId("btnMenu");
 		btnAbout.setOnAction(this);
-		AnchorPane.setTopAnchor(btnAbout, 210.0);
-		AnchorPane.setLeftAnchor(btnAbout, 30.0);
-		AnchorPane.setRightAnchor(btnAbout, 30.0);
-		anchorPaneMenu.getChildren().add(btnAbout);
+		
+		gridPane.add(btnAbout,5,0);
 		// exit
 		btnExit = new Button("Thoát");
 		btnExit.setId("btnMenu");
 		btnExit.setOnAction(this);
-		AnchorPane.setTopAnchor(btnExit, 250.0);
-		AnchorPane.setLeftAnchor(btnExit, 30.0);
-		AnchorPane.setRightAnchor(btnExit, 30.0);
-		anchorPaneMenu.getChildren().add(btnExit);
+	
+		gridPane.add(btnExit,6,0);
 		//
-		box.getChildren().add(anchorPaneLogo);
-		box.getChildren().add(anchorPaneMenu);
+		box.getChildren().add(gridPane);
 
+	
+
+
+		 */
 		// Bottom
+		Object name = inputname();
+
 		GridPane gridPaneBottom = new GridPane();
-		Labeled namePlayer1 = new Label("Player 1");
-		namePlayer1.setId("nameplayer");
-		Labeled namePlayer2 = new Label("Player 2");
-		namePlayer2.setId("nameplayer");
+		Labeled namePlayer1 = new Label(String.valueOf(name));
+		namePlayer1.setId("nameplayer");//để lấy màu chữ
+		//Labeled namePlayer2 = new Label("Player 2");
+		//namePlayer2.setId("nameplayer");
 		gridPaneBottom.add(namePlayer1, 0, 0);
-		gridPaneBottom.add(namePlayer2, 1, 0);
+		//gridPaneBottom.add(namePlayer2, 1, 0);
 		box.getChildren().add(gridPaneBottom);
 		//
+
+
 		GridPane gridPaneBottom1 = new GridPane();
-		timePlayer1 = new Label("30");
+		timePlayer1 = new Label("60");
 		timePlayer1.setId("timeplayer");
-		timePlayer2 = new Label("30");
+		timePlayer2 = new Label("60");
 		timePlayer2.setId("timeplayer");
-		gridPaneBottom1.add(timePlayer1, 0, 0);
-		gridPaneBottom1.add(timePlayer2, 1, 0);
+		gridPaneBottom1.add(timePlayer1, 0, 1);
+		//gridPaneBottom1.add(timePlayer2, 1, 0);
 		box.getChildren().add(gridPaneBottom1);
 		//
 		pane.setCenter(box);
@@ -252,8 +273,8 @@ public class View implements EventHandler<ActionEvent> {
 	public void aboutUs() {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("About us");
-		alert.setHeaderText("Game được phát triển bởi HAT-team");
-		alert.setContentText("1. Nguyễn Tuấn Anh \n2. Trần Sách Hải \n Chúc các bạn chơi game vui vẻ !");
+		alert.setHeaderText("");
+		alert.setContentText("");
 		alert.showAndWait();
 	}
 	// xet xem ai di truoc
