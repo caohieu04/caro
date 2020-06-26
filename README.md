@@ -13,18 +13,20 @@ Menu:
 * them mot boolean chanHaiDau
 * if else cac kieu o phan boardstare.checkEnd
 * của (Dung)
+``` diff
++ DONE
+```
 
-`Ke hoach het thu 5 xong` 
-`Debug het ngay thu 6 hai feature tren`
-
-(xong 2 phần kia rồi tính để không bug chéo) 
 Timer: 
-* moi nguoi co X phut giong co vua 
+* moi nguoi co X phut giong co vua (Dung)\
 
 LAN: 
 * shared folder o network, 2 may se cap nhat = file.dat nho feature save va load data
 * sender xuat .dat vao file folder
 * receiver nhan .dat lien tuc, neu .dat moi != .dat cu => ban co thay doi => cap nhat trang thai
+``` diff
+! Done sharing file, gio kiem cach send va receive trang thai ban co
+```
 
 ## Future feature:
 * feature thay doi kich co se lam sau
