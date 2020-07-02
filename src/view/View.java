@@ -4,7 +4,10 @@
 package view;
 
 import java.io.InputStream;
+import java.net.Socket;
 import java.util.Optional;
+import java.io.*;
+import java.net.*;
 
 import controller.Controller;
 import javafx.event.ActionEvent;
@@ -47,6 +50,15 @@ public class View implements EventHandler<ActionEvent> {
 	private Labeled timePlayer1, timePlayer2;
 	private BoardState boardState ;
 	private ComputerPlayer computer ;
+	//client
+	private int playerID;
+	private int otherPlayer;
+	private ClientSideConnection csc;
+	private int count = 0;
+	private boolean buttonEnable;
+	//
+	private HumanPlayer humanPlayer;
+	//
 	// lop dieu khien
 	Controller controller;
 	// mang quan co khi danh
@@ -55,31 +67,47 @@ public class View implements EventHandler<ActionEvent> {
 	public static Stage primaryStage;
 
 	public View() {
+		//
+		ConnectToServer();
+		if (playerID == 1){
+			otherPlayer = 2;
+			buttonEnable = true;
+		}
+		else{
+			otherPlayer = 1;
+			buttonEnable = false;
+		}
+		//
 	}
 	//
+	/*
 	public Object inputname(){
 		JFrame frame = new JFrame();
 		Object result = JOptionPane.showInputDialog(frame, "Enter name:");
 		return result;
 	}
+
+	 */
 	public void start(Stage primaryStage) {
 		try {
 			View.primaryStage = primaryStage;
 			arrayButtonChess = new Button[WIDTH_BOARD][HEIGHT_BOARD];
 			boardState = new BoardState(WIDTH_BOARD, HEIGHT_BOARD);
-			computer = new ComputerPlayer(boardState);
+			//
+			humanPlayer = new HumanPlayer(boardState);
+			//
 			controller = new Controller();
 			controller.setView(this);
-			controller.setPlayer(computer);
+			controller.setPlayer(humanPlayer);
 			//
 			BorderPane borderPane = new BorderPane();// tạo cái borderpane
 			BorderPane borderPaneLeft = new BorderPane();
 			BorderPane borderPaneRight = new BorderPane();
 			BorderPane borderPaneTop = new BorderPane();
 			//tạo 2 rectangle để chứa data
+
 			menu(borderPaneRight);
 			menuGridPane(borderPaneTop);
-			//
 			menu(borderPaneLeft);
 			//
 			GridPane root = new GridPane();
@@ -92,7 +120,9 @@ public class View implements EventHandler<ActionEvent> {
 			borderPane.setLeft(borderPaneLeft);//phải xóa dc cái borderright thì cái kia mới vô giữa
 			borderPane.setRight(borderPaneRight);
 			//set bàn cờ ra giữa
-			BorderPane.setMargin(root,new Insets(10,60,0,280));
+			BorderPane.setMargin(root,new Insets(10,60,0,220));
+			BorderPane.setMargin(borderPaneLeft,new Insets(5,0,0,30));
+			BorderPane.setMargin(borderPaneRight,new Insets(5,100,0,0));
 			//
 			// mac dinh player 1 di truoc
 			controller.setPlayerFlag(1);
@@ -113,6 +143,15 @@ public class View implements EventHandler<ActionEvent> {
 						public void handle(ActionEvent event) {
 							if (!controller.isEnd()) {
 								controller.play(button, arrayButtonChess);
+								//send button đến player kia
+								csc.sendButtonClick(button);
+								Thread t = new Thread(new Runnable() {
+									@Override
+									public void run() {
+										enemyPlay();
+									}
+								});
+								t.start();
 							}
 						}
 					});
@@ -121,11 +160,82 @@ public class View implements EventHandler<ActionEvent> {
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Caro");
 			primaryStage.show();
+			if (playerID == 2){
+				Thread thread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						enemyPlay();
+					}
+				});
+				thread.start();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	/*
+	Phần Client Multiplayer
+	 */
+	//data field line 51
+	//
+	public void enemyPlay(){//đối thủ đánh
+		Button enemyButton = new Button();
+		enemyButton.setAccessibleText(csc.receiveButton());
+		controller.play(enemyButton,arrayButtonChess);
+		System.out.println("Enemy played at "+ enemyButton.getAccessibleText());
+	}
+	//
+	public void ConnectToServer(){
+		csc = new ClientSideConnection();
+	}
+	//
+	private class ClientSideConnection{
+		private Socket socket;
+		private DataInputStream dataIn;
+		private DataOutputStream dataOut;
+		private String btnContent;
+		//constructor
+		public ClientSideConnection(){
+			System.out.println("----Client----");
+			try {
+				socket = new Socket("localhost",22222);
+				dataIn = new DataInputStream(socket.getInputStream());
+				dataOut = new DataOutputStream(socket.getOutputStream());
+				playerID = dataIn.readInt();//lấy player id từ server
+			}
+			catch (IOException ex){
+				System.out.println("IOException from constructor CSC");
+			}
+		}
+		//method để gửi button đi
+		public void sendButtonClick(Button buttonClicked){
+			try {
+				dataOut.writeUTF(buttonClicked.getAccessibleText());
+				dataOut.flush();
+			}
+			catch (IOException ex){
+				System.out.println("IOException from sendButtonClick CSC");
+			}
+		}
+		//methodd nhận button
+		public String receiveButton(){
+			try{
+				btnContent = dataIn.readUTF();
+				System.out.println("Button received");
+			}
+			catch (IOException ex){
+				System.out.println("IOException from receiveButton CSC");
+			}
+			return btnContent;
+		}
+	}
+	//method để disable button
+	public void toggleButtons(){
 
+	}
+	/*
+	Menu Button
+	 */
 	private void menuGridPane(BorderPane pane){
 		VBox box = new VBox();
 		box.setSpacing(10);
@@ -271,27 +381,33 @@ public class View implements EventHandler<ActionEvent> {
 
 
 		// Bottom
-		Object name = inputname();
 
 		GridPane gridPaneBottom = new GridPane();
-		Labeled namePlayer1 = new Label(String.valueOf(name));
-		namePlayer1.setId("nameplayer");//để lấy màu chữ
+		//
+		Labeled namePlayer;
+		if (count == 0){
+			namePlayer = new Label("Player "+playerID);
+		}
+		else{
+			namePlayer = new Label("Player" +otherPlayer);
+		}
+
+		//
+		namePlayer.setId("nameplayer");//để lấy màu chữ
 		//Labeled namePlayer2 = new Label("Player 2");
 		//namePlayer2.setId("nameplayer");
-		gridPaneBottom.add(namePlayer1, 0, 0);
+		gridPaneBottom.add(namePlayer, 0, 0);
 		//gridPaneBottom.add(namePlayer2, 1, 0);
-		box.getChildren().add(gridPaneBottom);
+		//box.getChildren().add(gridPaneBottom);
 		//
 
 
-		GridPane gridPaneBottom1 = new GridPane();
 		timePlayer1 = new Label("60");
 		timePlayer1.setId("timeplayer");
 		timePlayer2 = new Label("60");
 		timePlayer2.setId("timeplayer");
-		gridPaneBottom1.add(timePlayer1, 0, 1);
-		//gridPaneBottom1.add(timePlayer2, 1, 0);
-		box.getChildren().add(gridPaneBottom1);
+		gridPaneBottom.add(timePlayer1, 0, 1);
+		box.getChildren().add(gridPaneBottom);
 		//
 		pane.setCenter(box);
 	}
@@ -321,6 +437,8 @@ public class View implements EventHandler<ActionEvent> {
 			aboutUs();
 		}
 	}
+
+
 	// che do dau voi may
 	public void replayComputer() {
 		
