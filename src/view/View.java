@@ -69,14 +69,6 @@ public class View implements EventHandler<ActionEvent> {
 	public View() {
 		//
 		ConnectToServer();
-		if (playerID == 1){
-			otherPlayer = 2;
-			buttonEnable = true;
-		}
-		else{
-			otherPlayer = 1;
-			buttonEnable = false;
-		}
 		//
 	}
 	//
@@ -125,7 +117,17 @@ public class View implements EventHandler<ActionEvent> {
 			BorderPane.setMargin(borderPaneRight,new Insets(5,100,0,0));
 			//
 			// mac dinh player 1 di truoc
-			controller.setPlayerFlag(1);
+			//
+			if (playerID == 1){
+				otherPlayer = 2;
+				buttonEnable = true;
+			}
+			else{
+				otherPlayer = 1;
+				buttonEnable = false;
+			}
+			controller.setPlayerFlag(playerID);
+			//
 			controller.setTimePlayer(timePlayer1, timePlayer2);
 			for (int i = 0; i < WIDTH_BOARD; i++) {
 				for (int j = 0; j < HEIGHT_BOARD; j++) {
@@ -142,16 +144,18 @@ public class View implements EventHandler<ActionEvent> {
 						@Override
 						public void handle(ActionEvent event) {
 							if (!controller.isEnd()) {
+
 								controller.play(button, arrayButtonChess);
-								//send button đến player kia
 								csc.sendButtonClick(button);
 								Thread t = new Thread(new Runnable() {
 									@Override
 									public void run() {
 										enemyPlay();
+										//send button đến player kia
 									}
 								});
 								t.start();
+
 							}
 						}
 					});
@@ -160,15 +164,6 @@ public class View implements EventHandler<ActionEvent> {
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Caro");
 			primaryStage.show();
-			if (playerID == 2){
-				Thread thread = new Thread(new Runnable() {
-					@Override
-					public void run() {
-						enemyPlay();
-					}
-				});
-				thread.start();
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -180,8 +175,11 @@ public class View implements EventHandler<ActionEvent> {
 	//
 	public void enemyPlay(){//đối thủ đánh
 		Button enemyButton = new Button();
-		enemyButton.setAccessibleText(csc.receiveButton());
-		controller.play(enemyButton,arrayButtonChess);
+		String str = csc.receiveButton();
+		enemyButton.setAccessibleText(str);/*csc.receiveButton()*/
+		//controller.setPlayerFlag(otherPlayer);
+		//controller.play(enemyButton,arrayButtonChess);
+		//controller.setPlayerFlag(playerID);
 		System.out.println("Enemy played at "+ enemyButton.getAccessibleText());
 	}
 	//
