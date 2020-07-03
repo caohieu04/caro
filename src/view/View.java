@@ -125,6 +125,13 @@ public class View implements EventHandler<ActionEvent> {
 			else{
 				otherPlayer = 1;
 				buttonEnable = false;
+				Thread t = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						enemyPlay();
+					}
+				});
+				t.start();
 			}
 			controller.setPlayerFlag(playerID);
 			//
