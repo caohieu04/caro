@@ -33,14 +33,14 @@ import model.TaskTimer;
 import view.View;
 
 public class Controller implements IController {
-	public View view; 
-	private Player player;
+	public View view;
+	private Player player; //object player
 	private Stack<Point> stack; // ngan xep luu cac nuoc da di
-	private Class<?> classImg ; //  lay anh quan co
-	private InputStream o;
-	private InputStream x;
-	private Image imageO;
-	private Image imageX;
+	private Class<?> classImg ; //  lấy ảnh quân cờ
+	private InputStream o; //để lưu link ảnh của O
+	private InputStream x; // để lưu link ảnh của X
+	private Image imageO; // để chứa ảnh của O
+	private Image imageX; // để chứa ảnh cùa X
 	private boolean end;
 	private int tongNuocDi;
 	private String playerWin;
@@ -55,34 +55,36 @@ public class Controller implements IController {
 		playerWin = "";
 		stack = new Stack<>();
 		classImg = this.getClass();
-		o = classImg.getResourceAsStream("/image/o.png");
-		x = classImg.getResourceAsStream("/image/x.png");
-		imageO = new Image(o);
-		imageX = new Image(x);
+		o = classImg.getResourceAsStream("/image/O_picture.png"); // để lấy link ảnh của O cho vào input stream
+		x = classImg.getResourceAsStream("/image/X_picture.png"); //  để lấy link ảnh của O cho vào input stream
+		imageO = new Image(o); //lấy hình ảnh của O
+		imageX = new Image(x); //lấy hình ảnh của X
 	}
 
 	@Override
 	public Point AI(int player) {
 		return this.player.movePoint(player);
-	}
+	}// tra toa do cua nguoi choi va bot sẽ tính toán để đi nc tiếp theo
 
 	@Override
 	public int getPlayerFlag() {
+		//đang sửa
+
 		return player.getPlayerFlag();
-	}
+	} //getter tra ve luot nguoi choi
 
 	@Override
 	public void setPlayerFlag(int playerFlag) {
 		player.setPlayerFlag(playerFlag);
-	}
+	} // set den luot nguoi choi
 
 	@Override
 	public BoardState getBoardState() {
 		return player.getBoardState();
-	}
+	}// Kiem tra chien thang
 
 	@Override
-	public int checkEnd(int x, int y) {
+	public int checkEnd(int x, int y) {// kiểm tra kết thúc
 		return player.getBoardState().checkEnd(x, y);
 	}
 
@@ -90,74 +92,84 @@ public class Controller implements IController {
 	@Override
 	public boolean isEnd() {
 		return end;
-	}
+	} // end game --> View
 
 	@Override
-	public void play(Button c, Button[][] a) {
+	public void play(Button c, Button[][] a) { //dùng trong View class
+		//StringTokenizer cho phép break string thành các token
+		//Bỏ qua các delimiter
+		/* StringTokenizer st = new StringTokenizer("my,name,is,khan",",");
+     while (st.hasMoreTokens()) {
+         System.out.println(st.nextToken());
+         	Output:	my
+       				name
+       				is
+       				khan
+		 */
 		StringTokenizer tokenizer = new StringTokenizer(c.getAccessibleText(), ";");
-		int x = Integer.parseInt(tokenizer.nextToken());
+		int x = Integer.parseInt(tokenizer.nextToken());//lấy số i với j của mảng ra
 		int y = Integer.parseInt(tokenizer.nextToken());
-		//
-		if (player instanceof HumanPlayer) {
-			getBoardState();
-			if (getPlayerFlag() == 1 && BoardState.boardArr[x][y] == 0) {
-				danhCo(x, y, 1, a);
-				setPlayerFlag(2);
+		//Lay text ra từ button c và đổi thành Integer
+		if (player instanceof HumanPlayer) { //NẾu player là người chơi cả 2
+			getBoardState();//gọi boardstate để khởi tạo boardArr
+			if (getPlayerFlag() == 1 && BoardState.boardArr[x][y] == 0) {//Nếu là lượt của người chơi 1 và không có game đang lưu
+				danhCo(x, y, 1, a);//người thứ 1 đánh //??
+				//setPlayerFlag(2);//đến lượt người thứ 2
 			} else {
 				getBoardState();
-				if (getPlayerFlag() == 2 && BoardState.boardArr[x][y] == 0) {
-					danhCo(x, y, 2, a);
-					setPlayerFlag(1);
+				if (getPlayerFlag() == 2 && BoardState.boardArr[x][y] == 0) {//Nếu là lượt của người chơi 2	 và không có game đang lưu
+					danhCo(x, y, 2, a);//luot nguoi thu 2 đánh
+					//setPlayerFlag(1);//đén lượt người thứ 1
 				}
 			}
-
-		} else {
-			if (getPlayerFlag() == 1) {
-				if (getBoardState().getPosition(x, y) == 0) {
-					danhCo(x, y, 1, a);
-					setPlayerFlag(2);
+				//getplayerflag để biết đuọc đến lượt ai đi
+		} else {//Nếu player là computer
+			if (getPlayerFlag() == 1) {//Nếu người chơi 1 di trc
+				if (getBoardState().getPosition(x, y) == 0) {//nếu là game mới
+					danhCo(x, y, 1, a);//người chơi 1 đi
+					setPlayerFlag(2);//đến lượt ng chơi 2
 				}
 			}
 			if (getPlayerFlag()== 2) {
-					Point p = AI(2);
-					danhCo(p.x, p.y, 2, a);
-					setPlayerFlag(1);
+					Point p = AI(2);//Máy tính toán nước đi
+					danhCo(p.x, p.y, 2, a);//máy đi
+					setPlayerFlag(1);//chuyển sang lượt người chơi
 			}
 		}
-		if (end) {
-			if (player instanceof ComputerPlayer && playerWin.equals("2")) {
+		if (end) {//nếu end game
+			if (player instanceof ComputerPlayer && playerWin.equals("2")) {//Nếu player là computer
 				playerWin = "Computer";
 			}
-			timer1.cancel();
+			timer1.cancel();//dừng thời gian player1 và 2
 			timer2.cancel();
 			
 			dialog("Player " + playerWin + " win!");
 			return;
 		}
-		runTimer(getPlayerFlag());
+		runTimer(getPlayerFlag());//???
 	}
 
 
-	public void danhCo(int x, int y, int player, Button[][] arrayButtonChess) {
-		getBoardState().setPosition(x, y, player);
+	public void danhCo(int x, int y, int player, Button[][] arrayButtonChess) {// đua vô bàn cờ, tọa độ độ của nước đã đánh
+		getBoardState().setPosition(x, y, player);//set tọa dộ trên bàn cờ và người chơi nào đang sở hữu nước đó
 		if (player == 1) {
-			arrayButtonChess[x][y].setGraphic(new ImageView(imageX));
-			Point point = new Point(x, y);
-			point.setPlayer(1);
-			stack.push(point);
+			arrayButtonChess[x][y].setGraphic(new ImageView(imageX));//set ô tọa độ (x,y) đó trên bàn cờ là hình X
+			Point point = new Point(x, y);//tạo point x,y
+			point.setPlayer(1);//đánh dấu nc đó là của ng chơi 1
+			stack.push(point);//tạo point set player để lưu nc đi vào stack
 			tongNuocDi++;
 		} else {
-			arrayButtonChess[x][y].setGraphic(new ImageView(imageO));
-			Point point = new Point(x, y);
-			point.setPlayer(2);
-			stack.push(point);
+			arrayButtonChess[x][y].setGraphic(new ImageView(imageO));//set ô tọa độ (x,y) đó trên bàn cờ là hình O
+			Point point = new Point(x, y);//tạo point x,y
+			point.setPlayer(2);//đánh dấu nc đó là của ng chơi 1
+			stack.push(point);//lưu nc đi vào stack
 			tongNuocDi++;
 		}
-		if (getBoardState().checkEnd(x, y) == player) {
+		if (getBoardState().checkEnd(x, y) == player) {//để check game end hay chưa
 			playerWin = player + "";
 			end = true;
 		}
-		if (tongNuocDi == (getBoardState().height * getBoardState().width)) {
+		if (tongNuocDi == (getBoardState().height * getBoardState().width)) {//NẾu hết dg đi thì player 2 win
 			playerWin = 2 + "";
 			end = true;
 		}
@@ -172,7 +184,7 @@ public class Controller implements IController {
 			System.out.println();
 		}
 	}
-	// luu man choi 
+	//lưu trò chơi
 	@Override
 	public void save() {
 		FileChooser fileChooser = new FileChooser();
@@ -180,7 +192,7 @@ public class Controller implements IController {
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("DATA", "*.dat"),
 				new FileChooser.ExtensionFilter("All Images", "*.*"));
 		File file = fileChooser.showSaveDialog(View.primaryStage);
-		if (file != null) {
+		if (file != null) {//nếu file đã ghi từ trước thì tiếp tục ghi tiếp
 			ghiFile(file);
 		}
 	}
@@ -197,7 +209,7 @@ public class Controller implements IController {
 			e.printStackTrace();
 		}
 	}
-	// mo lai man choi
+	// mở lại màn chơi
 	@Override
 	public void open(Button[][] arrayButtonChess) {
 		FileChooser fileChooser = new FileChooser();
@@ -209,11 +221,12 @@ public class Controller implements IController {
 			load(file);
 			reset(arrayButtonChess);
 
-			stack = new Stack<>();
+			stack = new Stack<>();//lấy nc đi tứ stack ra
 			while (!queue.isEmpty()) {
 				Point point = queue.poll();
 				stack.push(point);
 				danhCo(point.x, point.y, point.player, arrayButtonChess);
+				//load lại từng nước bỏ vô stack
 			}
 
 		}
@@ -246,16 +259,16 @@ public class Controller implements IController {
 	// quay lại 1 nuoc co
 	@Override
 	public void undo(Button[][] arrayButtonChess) {
-		if (!stack.isEmpty()) {
-			tongNuocDi--;
-			Point point = stack.pop();
-			getBoardState();
-			BoardState.boardArr[point.x][point.y] = 0;
-			arrayButtonChess[point.x][point.y].setGraphic(null);
+		if (!stack.isEmpty()) {//nếu trong stack không trống
+			tongNuocDi--;//tổng nước đi trừ đi 1
+			Point point = stack.pop();//lấy 1 nc ra từ stack
+			getBoardState();//truy cập boardstate
+			BoardState.boardArr[point.x][point.y] = 0;//gán x,y trên bảng thành 0
+			arrayButtonChess[point.x][point.y].setGraphic(null);//xóa ảnh trên bảng caro
 		}
 	}
 	@Override
-	public void setPlayer(Player player) {
+	public void setPlayer(Player player) {//dùng dể set player là computer hay người chơi
 		this.player = player;
 	}
 
@@ -263,25 +276,25 @@ public class Controller implements IController {
 		return null;
 	}
 
-	EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
+	EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {//gán các nút cho evennt của nó
 		@Override
-		public void handle(ActionEvent e) {
+		public void handle(ActionEvent e) {//method handle trong View
 
 		}
 	};
 
-	public void dialog(String title) {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
+	public void dialog(String title) {//dùng trong method play, dùng để hiện bảng kết thuc`1 trò chơi
+		Alert alert = new Alert(AlertType.CONFIRMATION);//type alert là loại confirm
 		alert.setTitle("Trò chơi kết thúc");
 		alert.setHeaderText(title);
 		alert.setContentText("Bạn có muốn chơi lại");
 
-		Optional<ButtonType> result = alert.showAndWait();
+		Optional<ButtonType> result = alert.showAndWait();//Shows the dialog and waits for the user response.nhận input là button
 		if (result.get() == ButtonType.OK) {
-			if (getPlayer() instanceof HumanPlayer) {
-				view.replayHuman();
+			if (getPlayer() instanceof HumanPlayer) {//Nếu 2 player là người chơi
+				view.replayHuman();//tạo bàn cờ mới với 2 người chơi
 			} else {
-				view.replayComputer();
+				view.replayComputer();//tạo bàn cờ mới với máy chơi
 			}
 		} else {
 			// su dung khi chon khong hoac dong hoi thoai
@@ -289,30 +302,30 @@ public class Controller implements IController {
 	}
 
 	@Override
-	public void setView(View view) {
+	public void setView(View view) {//đưa class view vào
 		this.view = view;
 	}
 
 	@Override
-	public void setEnd(boolean end) {
+	public void setEnd(boolean end) {//để set kết thúc
 		this.end = end;
 	}
 
-	public Player getPlayer() {
+	public Player getPlayer() {//lấy phayer hiện tại
 		return player;
 	}
 
 	@Override
-	public void reset(Button[][] arrayButtonChess) {
+	public void reset(Button[][] arrayButtonChess) {//để reset game
 		tongNuocDi = 0;
-		timer1.cancel();
-		timer2.cancel();
+		timer1.cancel();//tắt thời gian
+		timer2.cancel();//tắt thời gian
 		timePlayer1.setText("30");
 		timePlayer2.setText("30");
-		getBoardState().resetBoard();
+		getBoardState().resetBoard();//reset lại bàn cờ
 		for (int i = 0; i < arrayButtonChess.length; i++) {
 			for (int j = 0; j < arrayButtonChess[i].length; j++) {
-				arrayButtonChess[i][j].setGraphic(null);
+				arrayButtonChess[i][j].setGraphic(null);//reset lại hình ảnh trên bàn cờ xóa hết X O
 			}
 		}
 	}
@@ -320,16 +333,17 @@ public class Controller implements IController {
 	Labeled timePlayer1, timePlayer2;
 
 	@Override
-	public void setTimePlayer(Labeled timePlayer1, Labeled timePlayer2) {
+	public void setTimePlayer(Labeled timePlayer1, Labeled timePlayer2) {//Dùng để chỉnh lại thời gian của player
+		//dùng trong start stage, replayhuman,replaycomputer
 		this.timePlayer1 = timePlayer1;
 		this.timePlayer2 = timePlayer2;
 	}
 	Timer timer1 = new Timer();
 	Timer timer2 = new Timer();
 	@Override
-	public void runTimer(int player) {
+	public void runTimer(int player) {//dùng để khởi tạo bộ đếm thời gian mới
 		if(end){
-			timer1.cancel();
+			timer1.cancel();//NẾu end thì canel bộ đếm thời gian
 			timer2.cancel();
 		}else{
 			timer1.cancel();
@@ -338,12 +352,12 @@ public class Controller implements IController {
 			TaskTimer task2 = new TaskTimer(timePlayer2);
 			task1.setController(this);
 			task2.setController(this);
-			if (player == 1) {
-				timer2.cancel();
+			if (player == 1) {//cứ mỗi lần đánh sẽ khởi tạo lại bội dếm thời gian
+				timer2.cancel();//1 đánh thì 2 ngừng
 				timer1 = new Timer();
 				timer1.schedule(task1, 0, 1000);
 			} else {
-				timer1.cancel();
+				timer1.cancel();//2 đánh thì 1 ngừng
 				timer2 = new Timer();
 				timer2.schedule(task2, 0, 1000);
 			}
