@@ -122,20 +122,13 @@ public class View implements EventHandler<ActionEvent> {
 			//
 			if (playerID == 1){
 				otherPlayer = 2;
+				buttonEnable = false;
+
 			}
 			else{
 				otherPlayer = 1;
-				Thread t = new Thread(new Runnable() {
-					@Override
-					public void run() {
-						tempstr = csc.receiveButton();//chờ đến khi nhận được string
-						Platform.runLater(()-> {
-							controller.play(tempstr, arrayButtonChess);
-						});
-						//toggleButtons();
-					}
-				});
-				t.start();
+				buttonEnable = true;
+				updateTurn();
 			}
 			//
 			controller.setPlayerFlag(1);
@@ -155,19 +148,10 @@ public class View implements EventHandler<ActionEvent> {
 						@Override
 						public void handle(ActionEvent event) {
 							if (!controller.isEnd()) {
+								buttonEnable = true;
+								toggleButtons();
 								csc.sendButtonClick(button);
-								Thread t = new Thread(new Runnable() {//bug ở đoạn này
-									@Override
-									public void run() {
-										tempstr = csc.receiveButton();
-										Platform.runLater(()-> {
-											controller.play(tempstr, arrayButtonChess);
-										});
-										//toggleButtons();
-										//send button đến player kia
-									}
-								});
-								t.start();
+								updateTurn();
 								controller.play(button.getAccessibleText(), arrayButtonChess);
 							}
 						}
@@ -185,7 +169,21 @@ public class View implements EventHandler<ActionEvent> {
 	Phần Client Multiplayer
 	 */
 	//data field line 51
-
+	public void updateTurn(){
+		Thread t = new Thread(new Runnable() {//bug ở đoạn này
+			@Override
+			public void run() {
+				tempstr = csc.receiveButton();
+				Platform.runLater(()-> {
+					controller.play(tempstr, arrayButtonChess);
+				});
+				buttonEnable = false;
+				toggleButtons();
+				//send button đến player kia
+			}
+		});
+		t.start();
+	}
 	public void ConnectToServer(){
 		csc = new ClientSideConnection();
 	}
@@ -232,7 +230,6 @@ public class View implements EventHandler<ActionEvent> {
 	}
 	//method để disable button
 	public void toggleButtons() {
-		buttonEnable = true;
 		for (int i = 0;i<WIDTH_BOARD; i++) {
 			for (int j=0;j<HEIGHT_BOARD;j++){
 				arrayButtonChess[i][j].setDisable(buttonEnable);
