@@ -68,8 +68,6 @@ public class Controller implements IController {
 
 	@Override
 	public int getPlayerFlag() {
-		//đang sửa
-
 		return player.getPlayerFlag();
 	} //getter tra ve luot nguoi choi
 
@@ -95,18 +93,8 @@ public class Controller implements IController {
 	} // end game --> View
 
 	@Override
-	public void play(Button c, Button[][] a) { //dùng trong View class
-		//StringTokenizer cho phép break string thành các token
-		//Bỏ qua các delimiter
-		/* StringTokenizer st = new StringTokenizer("my,name,is,khan",",");
-     while (st.hasMoreTokens()) {
-         System.out.println(st.nextToken());
-         	Output:	my
-       				name
-       				is
-       				khan
-		 */
-		StringTokenizer tokenizer = new StringTokenizer(c.getAccessibleText(), ";");
+	public void play(String buttonStr, Button[][] a) { //dùng trong View class
+		StringTokenizer tokenizer = new StringTokenizer(buttonStr, ";");
 		int x = Integer.parseInt(tokenizer.nextToken());//lấy số i với j của mảng ra
 		int y = Integer.parseInt(tokenizer.nextToken());
 		//Lay text ra từ button c và đổi thành Integer
@@ -114,12 +102,12 @@ public class Controller implements IController {
 			getBoardState();//gọi boardstate để khởi tạo boardArr
 			if (getPlayerFlag() == 1 && BoardState.boardArr[x][y] == 0) {//Nếu là lượt của người chơi 1 và không có game đang lưu
 				danhCo(x, y, 1, a);//người thứ 1 đánh //??
-				//setPlayerFlag(2);//đến lượt người thứ 2
-			} else {
+				setPlayerFlag(2);//đến lượt người thứ 2
+			} 	else {
 				getBoardState();
 				if (getPlayerFlag() == 2 && BoardState.boardArr[x][y] == 0) {//Nếu là lượt của người chơi 2	 và không có game đang lưu
 					danhCo(x, y, 2, a);//luot nguoi thu 2 đánh
-					//setPlayerFlag(1);//đén lượt người thứ 1
+					setPlayerFlag(1);//đén lượt người thứ 1
 				}
 			}
 				//getplayerflag để biết đuọc đến lượt ai đi
