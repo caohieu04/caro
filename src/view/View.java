@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.*;
 
 import controller.Controller;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -56,6 +57,7 @@ public class View implements EventHandler<ActionEvent> {
 	private ClientSideConnection csc;
 	private int count = 0;
 	private boolean buttonEnable;
+	private String tempstr;
 	//
 	private HumanPlayer humanPlayer;
 	//
@@ -120,21 +122,23 @@ public class View implements EventHandler<ActionEvent> {
 			//
 			if (playerID == 1){
 				otherPlayer = 2;
-				buttonEnable = true;
 			}
 			else{
 				otherPlayer = 1;
-				buttonEnable = false;
 				Thread t = new Thread(new Runnable() {
 					@Override
 					public void run() {
-						enemyPlay();
+						tempstr = csc.receiveButton();//chờ đến khi nhận được string
+						Platform.runLater(()-> {
+							controller.play(tempstr, arrayButtonChess);
+						});
+						//toggleButtons();
 					}
 				});
 				t.start();
 			}
-			controller.setPlayerFlag(playerID);
 			//
+			controller.setPlayerFlag(1);
 			controller.setTimePlayer(timePlayer1, timePlayer2);
 			for (int i = 0; i < WIDTH_BOARD; i++) {
 				for (int j = 0; j < HEIGHT_BOARD; j++) {
@@ -151,18 +155,20 @@ public class View implements EventHandler<ActionEvent> {
 						@Override
 						public void handle(ActionEvent event) {
 							if (!controller.isEnd()) {
-
-								controller.play(button, arrayButtonChess);
 								csc.sendButtonClick(button);
-								Thread t = new Thread(new Runnable() {
+								Thread t = new Thread(new Runnable() {//bug ở đoạn này
 									@Override
 									public void run() {
-										enemyPlay();
+										tempstr = csc.receiveButton();
+										Platform.runLater(()-> {
+											controller.play(tempstr, arrayButtonChess);
+										});
+										//toggleButtons();
 										//send button đến player kia
 									}
 								});
 								t.start();
-
+								controller.play(button.getAccessibleText(), arrayButtonChess);
 							}
 						}
 					});
@@ -179,17 +185,7 @@ public class View implements EventHandler<ActionEvent> {
 	Phần Client Multiplayer
 	 */
 	//data field line 51
-	//
-	public void enemyPlay(){//đối thủ đánh
-		Button enemyButton = new Button();
-		String str = csc.receiveButton();
-		enemyButton.setAccessibleText(str);/*csc.receiveButton()*/
-		//controller.setPlayerFlag(otherPlayer);
-		//controller.play(enemyButton,arrayButtonChess);
-		//controller.setPlayerFlag(playerID);
-		System.out.println("Enemy played at "+ enemyButton.getAccessibleText());
-	}
-	//
+
 	public void ConnectToServer(){
 		csc = new ClientSideConnection();
 	}
@@ -226,7 +222,7 @@ public class View implements EventHandler<ActionEvent> {
 		public String receiveButton(){
 			try{
 				btnContent = dataIn.readUTF();
-				System.out.println("Button received");
+				System.out.println(btnContent);
 			}
 			catch (IOException ex){
 				System.out.println("IOException from receiveButton CSC");
@@ -235,8 +231,13 @@ public class View implements EventHandler<ActionEvent> {
 		}
 	}
 	//method để disable button
-	public void toggleButtons(){
-
+	public void toggleButtons() {
+		buttonEnable = true;
+		for (int i = 0;i<WIDTH_BOARD; i++) {
+			for (int j=0;j<HEIGHT_BOARD;j++){
+				arrayButtonChess[i][j].setDisable(buttonEnable);
+			}
+		}
 	}
 	/*
 	Menu Button
@@ -390,12 +391,8 @@ public class View implements EventHandler<ActionEvent> {
 		GridPane gridPaneBottom = new GridPane();
 		//
 		Labeled namePlayer;
-		if (count == 0){
-			namePlayer = new Label("Player "+playerID);
-		}
-		else{
-			namePlayer = new Label("Player" +otherPlayer);
-		}
+
+		namePlayer = new Label("Player "+playerID);
 
 		//
 		namePlayer.setId("nameplayer");//để lấy màu chữ
