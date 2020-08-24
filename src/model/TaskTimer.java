@@ -20,7 +20,7 @@ public class TaskTimer extends TimerTask {
 
 	public TaskTimer(Labeled labeled) {
 		this.labeled = labeled;
-		this.labeled.setText("30");
+		this.labeled.setText("15");
 	}
 
 	@Override
@@ -32,8 +32,8 @@ public class TaskTimer extends TimerTask {
 				if (stop && !end) {
 					end = true;
 					stop = true;
-					dialog("Player " + controller.getPlayerFlag() + " Thua");
-				
+					dialog("Player " + controller.getPlayerFlag() + " lost");
+
 				} else {
 					if (!end)
 						as();
@@ -56,7 +56,7 @@ public class TaskTimer extends TimerTask {
 	public boolean isStop() {
 		return stop;
 	}
-// ham su dung khi tro choi ket thuc
+	// ham su dung khi tro choi ket thuc
 	public void dialog(String title) {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Trò chơi kết thúc");

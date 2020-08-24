@@ -9,8 +9,8 @@ public class ComputerPlayer implements Player {
 	int playerFlag = 2; // danh dau la computer player
 	int _x, _y; // toa do nuoc di
 
-	public static int maxDepth = 14; // do sau toi da
-	public static int maxMove = 7;  // so o tiep theo dem xet toi da
+	public static int maxDepth = 10; // do sau toi da
+	public static int maxMove = 10;  // so o tiep theo dem xet toi da
 	
 	public int[] AScore = {0,4,27,256,1458};// Mang diem tan cong 0,4,28,256,2308
 	public int[] DScore = {0,2,9,99,769};  // Mang diem phong ngu 0,1,9,85,769

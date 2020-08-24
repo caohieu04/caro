@@ -8,12 +8,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.Queue;
-import java.util.Stack;
-import java.util.StringTokenizer;
-import java.util.Timer;
+import java.util.*;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
@@ -46,7 +42,7 @@ public class Controller implements IController {
 	private String playerWin;
 
 	public Controller() {
-		getComponents();	
+		getComponents();
 	}
 
 	private void getComponents() {
@@ -110,7 +106,7 @@ public class Controller implements IController {
 					setPlayerFlag(1);//đén lượt người thứ 1
 				}
 			}
-				//getplayerflag để biết đuọc đến lượt ai đi
+			//getplayerflag để biết đuọc đến lượt ai đi
 		} else {//Nếu player là computer
 			if (getPlayerFlag() == 1) {//Nếu người chơi 1 di trc
 				if (getBoardState().getPosition(x, y) == 0) {//nếu là game mới
@@ -119,9 +115,9 @@ public class Controller implements IController {
 				}
 			}
 			if (getPlayerFlag()== 2) {
-					Point p = AI(2);//Máy tính toán nước đi
-					danhCo(p.x, p.y, 2, a);//máy đi
-					setPlayerFlag(1);//chuyển sang lượt người chơi
+				Point p = AI(2);//Máy tính toán nước đi
+				danhCo(p.x, p.y, 2, a);//máy đi
+				setPlayerFlag(1);//chuyển sang lượt người chơi
 			}
 		}
 		if (end) {//nếu end game
@@ -130,17 +126,17 @@ public class Controller implements IController {
 			}
 			timer1.cancel();//dừng thời gian player1 và 2
 			timer2.cancel();
-			
-			dialog("Player " + playerWin + " win!");
+
+			dialog("Player " + playerWin + " won!");
 			return;
 		}
 		runTimer(getPlayerFlag());//???
 	}
 
 
-	public void danhCo(int x, int y, int player, Button[][] arrayButtonChess) {// đua vô bàn cờ, tọa độ độ của nước đã đánh
-		getBoardState().setPosition(x, y, player);//set tọa dộ trên bàn cờ và người chơi nào đang sở hữu nước đó
-		if (player == 1) {
+	public void danhCo(int x, int y, int playeR, Button[][] arrayButtonChess) {// đua vô bàn cờ, tọa độ độ của nước đã đánh
+		getBoardState().setPosition(x, y, playeR);//set tọa dộ trên bàn cờ và người chơi nào đang sở hữu nước đó
+		if (playeR == 1) {
 			arrayButtonChess[x][y].setGraphic(new ImageView(imageX));//set ô tọa độ (x,y) đó trên bàn cờ là hình X
 			Point point = new Point(x, y);//tạo point x,y
 			point.setPlayer(1);//đánh dấu nc đó là của ng chơi 1
@@ -153,7 +149,7 @@ public class Controller implements IController {
 			stack.push(point);//lưu nc đi vào stack
 			tongNuocDi++;
 		}
-		if (getBoardState().checkEnd(x, y) == player) {//để check game end hay chưa
+		if (getBoardState().checkEnd(x, y) == playeR) {//để check game end hay chưa
 			playerWin = player + "";
 			end = true;
 		}
@@ -308,8 +304,8 @@ public class Controller implements IController {
 		tongNuocDi = 0;
 		timer1.cancel();//tắt thời gian
 		timer2.cancel();//tắt thời gian
-		timePlayer1.setText("30");
-		timePlayer2.setText("30");
+		timePlayer1.setText("15");
+		timePlayer2.setText("15");
 		getBoardState().resetBoard();//reset lại bàn cờ
 		for (int i = 0; i < arrayButtonChess.length; i++) {
 			for (int j = 0; j < arrayButtonChess[i].length; j++) {
