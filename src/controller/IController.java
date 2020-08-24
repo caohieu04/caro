@@ -21,7 +21,7 @@ public interface IController {
 	// set nguoi choi
 	public void setPlayer(Player player);
 	// bat dau choi
-	void play(Button c, Button[][] a);
+	void play(String buttonStr, Button[][] a);
 	// thoat
 	boolean isEnd();
 	// set giao dien 

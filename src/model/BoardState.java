@@ -36,11 +36,11 @@ public class BoardState {
 			}
 			if (human) {
 				if(widthBlock(c, row, 2))
-				return 1;}
+					return 1;}
 			if (pc)
 			{
 				if(widthBlock(c, row, 1))
-				return 2;}
+					return 2;}
 			c++;
 		}
 
@@ -146,19 +146,19 @@ public class BoardState {
 		}*/
 		if(c == 0) return true;
 		else if(c + 5 == width) return true;
-		else return boardArr[row][c + 5] != b && boardArr[row][c + (-1)] != b;
+		else return boardArr[row][c + 5] != b || boardArr[row][c + (-1)] != b;
 	}
 	private boolean heightBlock(int r, int col, int b){
 		if(r == 0) return true;
 		else if(r + 5 == height) return true;
-		else return boardArr[r +(- 1)][col] != b && boardArr[r + 5][col] != b;
+		else return boardArr[r +(- 1)][col] != b || boardArr[r + 5][col] != b;
 	}
 
 	private boolean downTiltBlock(int r, int c, int b){
 		if((r + 5 == height && c + 5 == width) || ( r == 0 && c == 0)) return true;
 		if(r == 0 || c == 0) return true;
 		else if(r + 5 == height || c + 5 == width ) return true;
-		else return boardArr[r + (-1)][c + (- 1)]  != b && boardArr[r + 5][c + 5] != b;
+		else return boardArr[r + (-1)][c + (- 1)]  != b || boardArr[r + 5][c + 5] != b;
 	}
 
 
@@ -167,7 +167,7 @@ public class BoardState {
 		if(r  == height || c  == 0) return true;
 		else if(r  == 4 || c + 5 == width ) return true;
 		else {
-			return boardArr[r + 1][c + (-1)]  != b && boardArr[r - 5][c + 5] != b;
+			return boardArr[r + 1][c + (-1)]  != b || boardArr[r - 5][c + 5] != b;
 		}
 	}
 }
